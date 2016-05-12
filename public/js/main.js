@@ -105,7 +105,8 @@ $(function () {
     // fillInOptions(restaurants, $('#restaurant-choices'));
     // fillInOptions(activities, $('#activity-choices'));
 
-    createDayButtons()
+    getDays()
+    .then(createDayButtons)
 
     /*
     --------------------------
@@ -127,8 +128,8 @@ $(function () {
 
     }
 
-    function createDayButtons () {
-      var days = getDays()
+    function createDayButtons (days) {
+      console.log(days)
       days.forEach((day) => {
         var $newDayButton = createDayButton(day.number)
         $addDayButton.before($newDayButton)
@@ -236,8 +237,8 @@ $(function () {
     // AJAX call functions -----
 
     function getDays () {
-      $.get('/api/days', function (days) {
-        console.log(days)
+      return $.get('/api/days', function (days) {
+        return days
       })
       .fail(console.error.bind(console))
     }

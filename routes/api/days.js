@@ -9,7 +9,9 @@ module.exports = router
 
 // Get all Days
 router.get('/', function (req, res, next) {
-  Day.findAll()
+  Day.findAll({
+    order: 'number'
+  })
   .then(function (days) {
     res.send(days)
   })
