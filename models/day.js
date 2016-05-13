@@ -12,6 +12,23 @@ var Day = db.define('day', {
 }, {
   defaultScope: {
     include: [Hotel, Restaurant, Activity]
+  },
+  classMethods: {
+  	findById: function(id) {
+  		return this.findOne({
+  			where: {
+  				id: id
+  			}
+  		})
+  	}
+  },
+  hooks: {
+  	// day is not actually being updated, just the join table
+  	// handle errors in our routers
+  	// beforeUpdate: function(day, options) {
+  	// 	if (day.restaurants.length > 3)
+  	// 		throw new ValidationError("# of Restaurants cannot exceed 3")
+  	// }
   }
 })
 

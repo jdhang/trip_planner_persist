@@ -4,6 +4,7 @@ const Restaurant = require('../../models/restaurant');
 const Activity = require('../../models/activity');
 const Place = require('../../models/place');
 const Day = require('../../models/day');
+const Promise = require('sequelize').Promise;
 
 module.exports = router
 
@@ -46,15 +47,72 @@ router.delete('/:id', function (req, res, next) {
 
 // Creating Attractions for Day
 router.post('/:id/hotel', function (req, res, next) {
-
+  var dayId = req.params.id;
+  var attractionId = req.body.itemId;
+  Promise.all([
+    Day.findById(dayId),
+    Hotel.findById(attractionId)
+  ])
+  .spread((day, hotel) => {
+    return day.setHotel(hotel);
+  })
+  .then((day) => {
+    return Day.findById(day.id);
+  })
+  .then((day) => {
+    res.send(day);
+  })
+  .catch(next)
 })
 
 router.post('/:id/restaurants', function (req, res, next) {
+  var dayId = req.params.id;
+  var attractionId = req.body.itemId;
+  var savedDay, savedRestaurant;
+  Promise.all([
+    Day.findById(dayId),
+    Restaurant.findById(attractionId)
+  ])
+  .spread((day, restaurant) => {
+    savedDay = day
+    savedRestaurant = restaurant;
+    return day.getRestaurants();
+  })
+  .then((restaurants) => {
+    console.log(restaurants)
+    if (restaurants.length >= 3)
+      Promise.reject(new Error('# of Restaurants cannot exceed 3'))
 
+  })
+  .then(() => {
+    return savedDay.addRestaurant(savedRestaurant);
+  })
+  .then((day) => {
+    return Day.findById(day.id);
+  })
+  .then((day) => {
+    res.send(day);
+  })
+  .catch(next)
 })
 
 router.post('/:id/activities', function (req, res, next) {
-
+  var dayId = req.params.id;
+  var attractionId = req.body.itemId;
+  Promise.all([
+    Day.findById(dayId),
+    Activity.findById(attractionId)
+  ])
+  .spread((day, activity) => {
+    return day.addActivity(activity);
+  })
+  .then((day) => {
+    return Day.findById(day.id);
+  })
+  .then((day) => {
+    res.send(day);
+  })
+  .catch(next)
 })
 
 // Updating Attractions for Day

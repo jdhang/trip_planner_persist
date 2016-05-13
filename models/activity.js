@@ -8,6 +8,15 @@ var Activity = db.define('activity', {
 }, {
   defaultScope: {
     include: [Place]
+  },
+  classMethods: {
+  	findById: function(id) {
+  		return this.findOne({
+  			where: {
+  				id: id
+  			}
+  		})
+  	}
   }
 });
 

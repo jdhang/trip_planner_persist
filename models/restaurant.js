@@ -12,6 +12,15 @@ var Restaurant = db.define('restaurant', {
 }, {
   defaultScope: {
     include: [Place]
+  },
+  classMethods: {
+  	findById: function(id) {
+  		return this.findOne({
+  			where: {
+  				id: id
+  			}
+  		})
+  	}
   }
 });
 
