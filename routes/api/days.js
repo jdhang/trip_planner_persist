@@ -79,16 +79,12 @@ router.post('/:id/restaurants', function (req, res, next) {
     return day.getRestaurants();
   })
   .then((restaurants) => {
-    console.log(restaurants)
-    if (restaurants.length >= 3)
-      Promise.reject(new Error('# of Restaurants cannot exceed 3'))
-
+    if (restaurants.length < 3) {
+      return savedDay.addRestaurant(savedRestaurant);
+    }
   })
   .then(() => {
-    return savedDay.addRestaurant(savedRestaurant);
-  })
-  .then((day) => {
-    return Day.findById(day.id);
+    return Day.findById(savedDay.id);
   })
   .then((day) => {
     res.send(day);
@@ -99,15 +95,23 @@ router.post('/:id/restaurants', function (req, res, next) {
 router.post('/:id/activities', function (req, res, next) {
   var dayId = req.params.id;
   var attractionId = req.body.itemId;
+  var savedDay, savedActivity;
   Promise.all([
     Day.findById(dayId),
     Activity.findById(attractionId)
   ])
   .spread((day, activity) => {
-    return day.addActivity(activity);
+    savedDay = day
+    savedActivity = activity;
+    return day.getActivities();
   })
-  .then((day) => {
-    return Day.findById(day.id);
+  .then((activities) => {
+    if (activities.length < 3) {
+      return savedDay.addActivity(savedActivity);
+    }
+  })
+  .then(() => {
+    return Day.findById(savedDay.id);
   })
   .then((day) => {
     res.send(day);
